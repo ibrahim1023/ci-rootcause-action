@@ -1,0 +1,79 @@
+name: ci-rootcause
+description: Deterministic CI root cause analysis with optional guarded fix PR creation.
+author: ci-rootcause
+branding:
+  icon: alert-triangle
+  color: yellow
+
+inputs:
+  github_token:
+    description: Token for GitHub API operations.
+    required: true
+  create_fix_pr:
+    description: Whether to open a guarded fix PR.
+    required: false
+    default: "false"
+  offline_only:
+    description: Whether to force offline-only mode (skip remote PR creation).
+    required: false
+    default: "false"
+  post_pr_comment:
+    description: Whether to post RCA summary comment.
+    required: false
+    default: "true"
+  base_ref:
+    description: Explicit base ref override for diff analysis.
+    required: false
+  head_ref:
+    description: Explicit head ref override for diff analysis.
+    required: false
+  config_path:
+    description: Project config path.
+    required: false
+    default: ".ci-rootcause.yml"
+  max_fix_files:
+    description: Maximum files allowed in generated fix patch.
+    required: false
+    default: "5"
+  min_pr_confidence:
+    description: Minimum confidence required before creating a fix PR.
+    required: false
+    default: "0.75"
+  rollout_profile:
+    description: "Optional rollout profile (supported: safe-github-rollout)."
+    required: false
+    default: ""
+
+outputs:
+  classification:
+    description: Deterministic failure classification.
+    value: ${{ steps.main.outputs.classification }}
+  confidence:
+    description: Deterministic confidence score.
+    value: ${{ steps.main.outputs.confidence }}
+  primary_root_cause_title:
+    description: Primary root cause title.
+    value: ${{ steps.main.outputs.primary_root_cause_title }}
+  rca_json_path:
+    description: Path to ci-rca.json.
+    value: ${{ steps.main.outputs.rca_json_path }}
+  rca_md_path:
+    description: Path to ci-rca.md.
+    value: ${{ steps.main.outputs.rca_md_path }}
+  pr_created:
+    description: Whether PR was created.
+    value: ${{ steps.main.outputs.pr_created }}
+  pr_url:
+    description: URL of created PR when available.
+    value: ${{ steps.main.outputs.pr_url }}
+  pr_number:
+    description: Number of created PR when available.
+    value: ${{ steps.main.outputs.pr_number }}
+
+runs:
+  using: composite
+  steps:
+    - id: main
+      shell: bash
+      run: |
+        python action_entrypoint.py

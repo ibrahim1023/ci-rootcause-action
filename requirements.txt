@@ -1,0 +1,4 @@
+google-adk==1.25.1
+pytest
+ruff
+pre-commit
