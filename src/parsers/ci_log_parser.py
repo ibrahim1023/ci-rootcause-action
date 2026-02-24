@@ -12,7 +12,8 @@ ERROR_PATTERNS: tuple[re.Pattern[str], ...] = (
 
 STACK_FRAME_PATTERN = re.compile(
     r"\s*File \"(?P<file>[^\"]+)\", line (?P<line>\d+)|"
-    r"\s*at (?P<js_file>[^:\s]+):(\d+):(\d+)"
+    r"\s*at (?P<js_file>[^:\s]+):(\d+):(\d+)|"
+    r"(?P<mypy_file>[A-Za-z0-9_./-]+):(?P<mypy_line>\d+):\s*error:"
 )
 
 
@@ -72,6 +73,10 @@ def _find_stack_context(lines: list[str], idx: int) -> tuple[str | None, int | N
                 line_no = int(js_line_match.group(1))
                 file_path = js_file
                 frames.append(f"{file_path}:{line_no}")
+        elif match.group("mypy_file") is not None and match.group("mypy_line") is not None:
+            file_path = match.group("mypy_file")
+            line_no = int(match.group("mypy_line"))
+            frames.append(f"{file_path}:{line_no}")
 
     return file_path, line_no, frames
 

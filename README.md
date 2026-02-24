@@ -166,6 +166,7 @@ Marketplace wrapper sync automation:
 - Release tags (`v*`) trigger `.github/workflows/publish-wrapper.yml` to sync
   `src/`, `action.yml`, `README.md`, and `requirements.txt` into the wrapper repo.
 - Wrapper tags are updated to the same release tag and major alias `v0`.
+- Wrapper GitHub Release objects are created/updated automatically for the synced tag.
 - Required repository secret in source repo: `CI_ROOTCAUSE_ACTION_REPO_TOKEN`
   (PAT with write access to `ibrahim1023/ci-rootcause-action`).
 
@@ -204,6 +205,20 @@ Notes:
 - Test is skipped unless `CI_ROOTCAUSE_LIVE_GITHUB=1`.
 - Use a disposable repository with push + PR permissions.
 - Script prints a cleanup checklist after the test run.
+
+## Marketplace Smoke Test Workflow
+
+You can run a manual in-repo smoke test of the GitHub Action from the Actions tab:
+
+- Workflow: `Smoke Test Marketplace Action`
+- Trigger: `workflow_dispatch`
+- Behavior:
+  - runs `uses: ibrahim1023/ci-rootcause-action@v0.1.4` only
+  - uses a deterministic typecheck-style log signal and `create_fix_pr=true`
+  - asserts `pr_created=true` and non-empty `pr_url`
+  - uploads RCA artifacts (`ci-rca.json`, `ci-rca.md`, `ci-rca-observability.json`)
+
+This workflow is isolated from default CI and is intended only for manual validation.
 
 ## MVP Metrics And Release Artifacts
 
