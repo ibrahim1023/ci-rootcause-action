@@ -144,6 +144,8 @@ Autonomous PR note:
 
 - If `create_fix_pr=true` and explicit `validated_changes` are not provided, the pipeline can
   synthesize deterministic evidence-backed changes for `TYPECHECK` cases.
+- For simple `int` assignment mismatches (for example `value: int = "7"`), synthesis prefers
+  semantic correction (`value: int = 7`) over suppression comments.
 - For non-`TYPECHECK` cases, explicit validated changes are still required for PR creation.
 
 Safe rollout profile:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import time
 from copy import deepcopy
 from dataclasses import dataclass, field
@@ -24,6 +25,12 @@ class OrchestrationError(RuntimeError):
 
 
 AgentHandler = Callable[["PipelineState"], dict[str, Any]]
+
+TYPECHECK_INT_ASSIGNMENT_PATTERN = re.compile(
+    r"^(?P<prefix>\s*[A-Za-z_]\w*\s*:\s*int\s*=\s*)"
+    r"(?P<quote>['\"])(?P<number>-?\d+)(?P=quote)"
+    r"(?P<suffix>\s*(?:#.*)?)$"
+)
 
 
 def _module_exists(module_name: str) -> bool:
@@ -284,6 +291,20 @@ def _synthesize_typecheck_change(
     target = lines[line_index]
     if "type: ignore" in target:
         return None
+
+    target_body = target.rstrip("\n")
+    int_assignment = TYPECHECK_INT_ASSIGNMENT_PATTERN.match(target_body)
+    if int_assignment is not None:
+        replacement = (
+            f"{int_assignment.group('prefix')}"
+            f"{int_assignment.group('number')}"
+            f"{int_assignment.group('suffix')}"
+        )
+        if target.endswith("\n"):
+            lines[line_index] = f"{replacement}\n"
+        else:
+            lines[line_index] = replacement
+        return "".join(lines)
 
     suffix = "  # type: ignore[assignment]"
     if target.endswith("\n"):
