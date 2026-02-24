@@ -40,7 +40,7 @@ inputs:
     required: false
     default: "0.75"
   rollout_profile:
-    description: "Optional rollout profile (supported: safe-github-rollout)."
+    description: Optional rollout profile (supported: safe-github-rollout).
     required: false
     default: ""
 
@@ -76,4 +76,4 @@ runs:
     - id: main
       shell: bash
       run: |
-        python action_entrypoint.py
+        python -m src.action_entrypoint

@@ -140,6 +140,12 @@ Outputs:
 - `rca_json_path`, `rca_md_path`
 - `pr_created`, `pr_url`, `pr_number`
 
+Autonomous PR note:
+
+- If `create_fix_pr=true` and explicit `validated_changes` are not provided, the pipeline can
+  synthesize deterministic evidence-backed changes for `TYPECHECK` cases.
+- For non-`TYPECHECK` cases, explicit validated changes are still required for PR creation.
+
 Safe rollout profile:
 
 - `safe-github-rollout` keeps guarded PR flow conservative during rollout
@@ -152,6 +158,16 @@ Required workflow permissions:
 - `contents: write` (PR creation only)
 - `pull-requests: write`
 - `actions: read`
+
+Marketplace wrapper sync automation:
+
+- Source repo keeps development workflows; Marketplace wrapper is
+  `ibrahim1023/ci-rootcause-action`.
+- Release tags (`v*`) trigger `.github/workflows/publish-wrapper.yml` to sync
+  `src/`, `action.yml`, `README.md`, and `requirements.txt` into the wrapper repo.
+- Wrapper tags are updated to the same release tag and major alias `v0`.
+- Required repository secret in source repo: `CI_ROOTCAUSE_ACTION_REPO_TOKEN`
+  (PAT with write access to `ibrahim1023/ci-rootcause-action`).
 
 ## Architecture Details
 
