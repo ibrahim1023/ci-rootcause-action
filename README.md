@@ -138,7 +138,7 @@ Outputs:
 
 - `classification`, `confidence`, `primary_root_cause_title`
 - `rca_json_path`, `rca_md_path`
-- `pr_created`, `pr_url`, `pr_number`
+- `pr_created`, `pr_url`, `pr_number`, `pr_failure_reason`
 
 Autonomous PR note:
 
@@ -213,8 +213,9 @@ You can run a manual in-repo smoke test of the GitHub Action from the Actions ta
 - Workflow: `Smoke Test Marketplace Action`
 - Trigger: `workflow_dispatch`
 - Behavior:
-  - runs `uses: ibrahim1023/ci-rootcause-action@v0.1.4` only
+  - runs `uses: ibrahim1023/ci-rootcause-action@v0.1.6` only
   - uses a deterministic typecheck-style log signal and `create_fix_pr=true`
+  - prints `pr_failure_reason` when PR creation is skipped
   - asserts `pr_created=true` and non-empty `pr_url`
   - uploads RCA artifacts (`ci-rca.json`, `ci-rca.md`, `ci-rca-observability.json`)
 

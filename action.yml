@@ -69,6 +69,9 @@ outputs:
   pr_number:
     description: Number of created PR when available.
     value: ${{ steps.main.outputs.pr_number }}
+  pr_failure_reason:
+    description: Reason PR creation was skipped or failed guardrail checks.
+    value: ${{ steps.main.outputs.pr_failure_reason }}
 
 runs:
   using: composite

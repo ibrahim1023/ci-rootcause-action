@@ -186,6 +186,7 @@ def _build_summary(state: Any) -> dict[str, Any]:
     pr_created = False
     pr_url = ""
     pr_number = ""
+    pr_failure_reason = ""
 
     classification_output = state.agent_outputs.get("failure_classification", {})
     ranker_output = state.agent_outputs.get("root_cause_ranker", {})
@@ -208,6 +209,8 @@ def _build_summary(state: Any) -> dict[str, Any]:
             pr_url = str(pr_output["pr_url"])
         if pr_output.get("pr_number") is not None:
             pr_number = str(pr_output["pr_number"])
+        if pr_output.get("failure_reason"):
+            pr_failure_reason = str(pr_output["failure_reason"])
 
     return {
         "classification": classification,
@@ -218,6 +221,7 @@ def _build_summary(state: Any) -> dict[str, Any]:
         "pr_created": "true" if pr_created else "false",
         "pr_url": pr_url,
         "pr_number": pr_number,
+        "pr_failure_reason": pr_failure_reason,
     }
 
 
@@ -231,7 +235,7 @@ def _write_github_outputs(outputs: dict[str, str]) -> None:
     print(payload, end="")
 
 
-def _emit_failure_outputs() -> None:
+def _emit_failure_outputs(*, failure_reason: str = "") -> None:
     _write_github_outputs(
         {
             "classification": "UNKNOWN",
@@ -242,6 +246,7 @@ def _emit_failure_outputs() -> None:
             "pr_created": "false",
             "pr_url": "",
             "pr_number": "",
+            "pr_failure_reason": failure_reason,
         }
     )
 
@@ -348,7 +353,7 @@ def main() -> int:
         return 0 if state.pipeline_status in {"completed", "partial"} else 2
     except Exception as exc:
         print(f"ci-rootcause action error: {exc}")
-        _emit_failure_outputs()
+        _emit_failure_outputs(failure_reason=str(exc))
         return 2
 
 
